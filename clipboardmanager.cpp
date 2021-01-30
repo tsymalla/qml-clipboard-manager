@@ -1,20 +1,69 @@
 #include "clipboardmanager.h"
 #include <QObject>
 #include <QApplication>
+#include <QImage>
+#include <QMimeData>
+#include <QUrl>
+#include "imageutils.h"
 
 ClipboardManager::ClipboardManager(QObject* parent): QObject(parent)
 {
     _clipboard = QApplication::clipboard();
+    _model = new ClipboardModel(this);
     connect(_clipboard, &QClipboard::dataChanged, this, &ClipboardManager::contentChanged);
+
+    // update entry count.
+    connect(_model, &QAbstractListModel::rowsInserted, this, &ClipboardManager::entryCountChanged);
+    connect(_model, &QAbstractListModel::rowsRemoved, this, &ClipboardManager::entryCountChanged);
 }
 
-QList<QVariant> ClipboardManager::content() const
+size_t ClipboardManager::entryCount() const
 {
-    return _content;
+    return _model->rowCount(QModelIndex());
+}
+
+void ClipboardManager::setClipboardEntry(QVariant index) const
+{
+    QModelIndex newIndex = index.value<QModelIndex>();
+    if (!index.isValid())
+    {
+        return;
+    }
+
+    const auto& data = _model->data(newIndex, ClipboardRoles::DataRole);
+    _clipboard->setText(data.toString());
 }
 
 void ClipboardManager::contentChanged()
 {
-    _content.insert(0, _clipboard->text());
-    emit newClipboardEntry();
+    const auto mimeData = _clipboard->mimeData();
+
+    if (mimeData == nullptr)
+    {
+        return;
+    }
+
+    QString data;
+    ClipboardEntryType entryType = ClipboardEntryType::TEXT;
+
+    if (mimeData->hasUrls())
+    {
+        foreach (const QUrl& url, mimeData->urls())
+        {
+            if (ImageUtils::isImage(url))
+            {
+                data = ImageUtils::toBase64(_clipboard->image());
+                entryType = ClipboardEntryType::IMAGE;
+            }
+        }
+    }
+    else
+    {
+        data = _clipboard->text();
+    }
+
+    if (!data.isEmpty())
+    {
+        _model->addClipboardEntry(ClipboardEntry(entryType, std::move(data)));
+    }
 }

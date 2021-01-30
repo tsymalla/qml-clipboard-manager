@@ -16,8 +16,12 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets Quick REQUIRED)
 
 set(PROJECT_SOURCES
         main.cpp
+        clipboardmodel.h
+        clipboardmodel.cpp
         clipboardmanager.h
         clipboardmanager.cpp
+        imageutils.h
+        imageutils.cpp
         qml.qrc
 )
 

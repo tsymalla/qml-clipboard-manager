@@ -13,10 +13,28 @@ ApplicationWindow {
         ListView {
             id: listView
             width: parent.width
-            model: clipboard.content
+            model: clipboard.model
+
+            header: Label {
+                font.pixelSize: 16
+                font.bold: true
+                elide: Label.ElideRight
+                width: ListView.view.width
+                padding: {
+                    left: 14
+                }
+
+                text: "Number of entries in clipboard: " + clipboard.entryCount
+            }
+
             delegate: ItemDelegate {
-                text: "Clipboard entry #" + (clipboard.content.length - index) + ": " + clipboard.content[index]
+                required property string type
+                required property string data
+                required property string dateTime
+
+                text: (type == "image" ? "Image" : data) + "\n" + "Created: " + dateTime
                 width: listView.width
+
             }
         }
     }
