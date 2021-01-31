@@ -24,8 +24,9 @@ size_t ClipboardManager::entryCount() const
 
 void ClipboardManager::setClipboardEntry(QVariant index) const
 {
-    QModelIndex newIndex = index.value<QModelIndex>();
-    if (!index.isValid())
+    QModelIndex newIndex = _model->index(index.toInt(), 0);
+
+    if (!newIndex.isValid())
     {
         return;
     }

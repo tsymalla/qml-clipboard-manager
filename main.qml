@@ -28,16 +28,14 @@ ApplicationWindow {
                 text: "Number of entries in clipboard: " + clipboard.entryCount
             }
 
-            delegate: Row  {
+            delegate: Row {
+                required property int index
                 required property string type
                 required property string content
                 required property string dateTime
 
                 width: parent.width
-
-                padding: {
-                    left: 14
-                }
+                leftPadding: 14
 
                 Column {
                     Rectangle {
@@ -83,14 +81,15 @@ ApplicationWindow {
                     Label {
                         topPadding: 14
                         font.italic: true
-                        font.pixelSize: 14
-                        color: "gray"
-                        text: "Created on: " + dateTime
+                        font.pixelSize: 12
+                        color: "silver"
+                        text: dateTime
                     }
 
                     Button {
                         onClicked: {
-                            clipboard.setClipboardEntry(index)
+                            listView.currentIndex = index
+                            clipboard.setClipboardEntry(listView.currentIndex)
                         }
 
                         width: 130
