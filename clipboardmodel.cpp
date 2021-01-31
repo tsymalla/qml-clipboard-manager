@@ -1,11 +1,11 @@
 #include "clipboardmodel.h"
 #include <QDateTime>
 
-ClipboardEntry::ClipboardEntry(const ClipboardEntryType type, QString data):
+ClipboardEntry::ClipboardEntry(const ClipboardEntryType type, QString content):
     _type(type),
-    _data(std::move(data))
+    _content(std::move(content))
 {
-    _dateTime = QDateTime::currentDateTime().toString();
+    _dateTime = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
 }
 
 ClipboardEntryType ClipboardEntry::type() const
@@ -28,9 +28,9 @@ QString ClipboardEntry::typeStr() const
     return "unknown";
 }
 
-QString ClipboardEntry::data() const
+QString ClipboardEntry::content() const
 {
-    return _data;
+    return _content;
 }
 
 QString ClipboardEntry::dateTime() const
@@ -73,8 +73,8 @@ QVariant ClipboardModel::data(const QModelIndex& index, int role) const
     case ClipboardRoles::TypeRole:
         return entry.typeStr();
 
-    case ClipboardRoles::DataRole:
-        return entry.data();
+    case ClipboardRoles::ContentRole:
+        return entry.content();
 
     case ClipboardRoles::DateTimeRole:
         return entry.dateTime();
@@ -87,7 +87,7 @@ QHash<int, QByteArray> ClipboardModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles[ClipboardRoles::TypeRole] = "type";
-    roles[ClipboardRoles::DataRole] = "data";
+    roles[ClipboardRoles::ContentRole] = "content";
     roles[ClipboardRoles::DateTimeRole] = "dateTime";
 
     return roles;

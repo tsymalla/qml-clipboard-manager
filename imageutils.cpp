@@ -2,22 +2,26 @@
 #include <QString>
 #include <QImage>
 #include <QByteArray>
-#include <QBuffer>
 #include <QUrl>
 #include <QMimeDatabase>
 #include <QMimeType>
+#include <QFile>
 
-QString ImageUtils::toBase64(const QImage& image)
+QString ImageUtils::toBase64(const QUrl& imageUrl)
 {
-    QByteArray bytes;
-    QBuffer inputBuffer(&bytes);
-    inputBuffer.open(QIODevice::WriteOnly);
-    image.save(&inputBuffer, "PNG");
+    QFile source(imageUrl.toLocalFile());
 
-    QString base64Data = bytes.toBase64();
-    inputBuffer.close();
+    source.open(QIODevice::ReadOnly);
+    if (!source.isOpen())
+    {
+        return QString();
+    }
 
-    return base64Data;
+    QByteArray bytes = source.readAll();
+
+    source.close();
+
+    return bytes.toBase64();
 }
 
 bool ImageUtils::isImage(const QUrl& url)

@@ -10,7 +10,7 @@ class ImageUtils
 public:
     ImageUtils() = default;
 
-    static QString toBase64(const QImage& image);
+    static QString toBase64(const QUrl& imageUrl);
     static bool isImage(const QUrl& url);
 };
 

@@ -10,7 +10,7 @@ ClipboardManager::ClipboardManager(QObject* parent): QObject(parent)
 {
     _clipboard = QApplication::clipboard();
     _model = new ClipboardModel(this);
-    connect(_clipboard, &QClipboard::dataChanged, this, &ClipboardManager::contentChanged);
+    connect(_clipboard, &QClipboard::changed, this, &ClipboardManager::contentChanged);
 
     // update entry count.
     connect(_model, &QAbstractListModel::rowsInserted, this, &ClipboardManager::entryCountChanged);
@@ -30,7 +30,7 @@ void ClipboardManager::setClipboardEntry(QVariant index) const
         return;
     }
 
-    const auto& data = _model->data(newIndex, ClipboardRoles::DataRole);
+    const auto& data = _model->data(newIndex, ClipboardRoles::ContentRole);
     _clipboard->setText(data.toString());
 }
 
@@ -52,7 +52,7 @@ void ClipboardManager::contentChanged()
         {
             if (ImageUtils::isImage(url))
             {
-                data = ImageUtils::toBase64(_clipboard->image());
+                data = ImageUtils::toBase64(url);
                 entryType = ClipboardEntryType::IMAGE;
             }
         }

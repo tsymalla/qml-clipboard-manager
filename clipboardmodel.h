@@ -13,24 +13,24 @@ enum class ClipboardEntryType: std::size_t
 class ClipboardEntry
 {
 public:
-    explicit ClipboardEntry(const ClipboardEntryType type, QString data);
+    explicit ClipboardEntry(const ClipboardEntryType type, QString content);
 
     ClipboardEntryType type() const;
     QString typeStr() const;
-    QString data() const;
+    QString content() const;
     QString dateTime() const;
 
 private:
     ClipboardEntryType _type;
-    QString _data;
+    QString _content;
     QString _dateTime;
 };
 
 enum ClipboardRoles
 {
     TypeRole = Qt::UserRole + 1,
-    DataRole = TypeRole + 1,
-    DateTimeRole = DataRole + 1
+    ContentRole = TypeRole + 1,
+    DateTimeRole = ContentRole + 1
 };
 
 class ClipboardModel : public QAbstractListModel
