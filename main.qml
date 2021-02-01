@@ -68,7 +68,8 @@ ApplicationWindow {
 
                     Label {
                         visible: (type != "image")
-                        text: content.trim()
+                        text: width + content.trim()
+                        wrapMode: WordWrap
                     }
 
                     Image {
