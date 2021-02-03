@@ -82,8 +82,8 @@ ApplicationWindow {
                 }
 
                 Image {
-                    height: 64
-                    width: 64
+                    width: 140
+                    fillMode: Image.PreserveAspectFit
                     visible: (type == "image")
                     source: (type == "image" ? "data:image/png;base64," + content : "")
                 }
@@ -100,6 +100,7 @@ ApplicationWindow {
                     onClicked: {
                         listView.currentIndex = index
                         clipboard.setClipboardEntry(listView.currentIndex)
+                        notifi
                     }
 
                     width: 130
