@@ -9,97 +9,105 @@ ApplicationWindow {
     visible: true
     title: qsTr("Clipboard Manager")
 
-    ScrollView {
+    ListView {
+        id: listView
+        model: clipboard.model
         anchors.fill: parent
 
-        ListView {
-            id: listView
-            model: clipboard.model
+        flickableDirection: Flickable.HorizontalAndVerticalFlick
+        contentWidth: listView.contentItem.childrenRect.width + 16
 
-            header: Label {
-                font.pixelSize: 16
-                font.bold: true
-                elide: Label.ElideRight
-                width: ListView.view.width
-                padding: {
-                    left: 14
-                }
+        ScrollBar.vertical: ScrollBar {
+            active: true
+        }
 
-                text: "Number of entries in clipboard: " + clipboard.entryCount
+        ScrollBar.horizontal: ScrollBar {
+            active: true
+        }
+
+        header: Label {
+            font.pixelSize: 16
+            font.bold: true
+            elide: Label.ElideRight
+            width: ListView.view.width
+            padding: {
+                left: 14
             }
 
-            delegate: Row {
-                required property int index
-                required property string type
-                required property string content
-                required property string dateTime
+            text: "Number of entries in clipboard: " + clipboard.entryCount
 
-                width: parent.width
-                leftPadding: 14
+        }
 
-                Column {
-                    Rectangle {
-                        id: dataType
-                        width: 24
-                        height: 24
-                        radius: 16
-                        border.color: "white"
-                        color: (type == "image" ? "green" : "blue")
+        delegate: Row {
+            required property int index
+            required property string type
+            required property string content
+            required property string dateTime
 
-                        MouseArea {
-                            id: dataTypeMouseArea
-                            anchors.fill: parent
-                            hoverEnabled: true
+            leftPadding: 14
+            id: rowDelegate
 
-                            ToolTip {
-                                visible: dataTypeMouseArea.containsMouse
-                                Text {
-                                    text: (type == "image" ? "Image file" : "Text")
-                                }
+            Column {
+                Rectangle {
+                    id: dataType
+                    width: 24
+                    height: 24
+                    radius: 16
+                    border.color: "white"
+                    color: (type == "image" ? "green" : "blue")
+
+                    MouseArea {
+                        id: dataTypeMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        ToolTip {
+                            visible: dataTypeMouseArea.containsMouse
+                            Text {
+                                text: (type == "image" ? "Image file" : "Text")
                             }
                         }
                     }
                 }
+            }
 
-                Column {
-                    width: parent.width
+            Column {
+                leftPadding: 14
 
-                    leftPadding: 14
+                Label {
+                    width: listView.width
+                    visible: (type != "image")
+                    text: content.trim()
+                    wrapMode: "WordWrap"
+                }
+
+                Image {
+                    height: 64
+                    width: 64
+                    visible: (type == "image")
+                    source: (type == "image" ? "data:image/png;base64," + content : "")
+                }
+
+                Label {
+                    topPadding: 14
+                    font.italic: true
+                    font.pixelSize: 12
+                    color: "silver"
+                    text: dateTime
+                }
+
+                Button {
+                    onClicked: {
+                        listView.currentIndex = index
+                        clipboard.setClipboardEntry(listView.currentIndex)
+                    }
+
+                    width: 130
+                    height: 40
 
                     Label {
-                        visible: (type != "image")
-                        text: content.trim()
-                        wrapMode: WordWrap
-                    }
-
-                    Image {
-                        height: 64
-                        width: 64
-                        visible: (type == "image")
-                        source: (type == "image" ? "data:image/png;base64," + content : "")
-                    }
-
-                    Label {
-                        topPadding: 14
-                        font.italic: true
-                        font.pixelSize: 12
-                        color: "silver"
-                        text: dateTime
-                    }
-
-                    Button {
-                        onClicked: {
-                            listView.currentIndex = index
-                            clipboard.setClipboardEntry(listView.currentIndex)
-                        }
-
-                        width: 130
-                        height: 40
-
-                        Label {
-                            anchors.centerIn: parent
-                            text: "Copy to clipboard"
-                        }
+                        anchors.centerIn: parent
+                        text: "Copy to clipboard"
                     }
                 }
             }
